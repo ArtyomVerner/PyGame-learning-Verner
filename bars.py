@@ -1,22 +1,23 @@
 import pygame, os, sys
 class Block():
-    def __init__(self, cords, width, height, color,):
+    def __init__(self, cords, width, height, color,copyColor):
         self.x=cords[0]
         self.y=cords[1]
         self.h=height
         self.w=width
         self.image=pygame.Surface((width, height), pygame.SRCALPHA)
         self.color=color
+        self.second_color = (255,0,0)
         self.draw()
-    def change_color(self, cords):
+        self.originalColor=copyColor
+    def changeColor(self, cords, ):
+
         if self.collidePoint(cords) == True:
-            if self.color != (100, 0, 0):
-                self.color = (100, 0, 0)
-                self.draw()
-            else:
-                self.color = self.color
-                self.draw()
-            return self.color
+            # color=self.color
+            # newColor=(100,0,0)
+            # self.color=newColor
+            self.color, self.second_color=self.second_color, self.color
+            self.draw()
 
     def moveON(self,moveTo):#Передвижение блока
         self.x += moveTo[0]
@@ -37,7 +38,7 @@ class Block():
 
     def events(self, e):#Обрабатывает события  влияющие на объект.
         if e.type == pygame.MOUSEBUTTONDOWN:
-            self.change_color(e.pos)
+            self.changeColor(e.pos)
         if e.type == pygame.MOUSEMOTION:
             self.moveON(e.rel)
 
@@ -60,9 +61,9 @@ display = pygame.display.set_mode((400, 400)) #создание окна
 """
 Содание объектов
 """
-first=Block((100, 10), 80, 100, (0,0,0))
-second=Block((100, 100), 90, 40, (0,101,20))
-third=Block((23, 150), 45, 40, (101,101,101))
+first=Block((100, 10), 80, 100, (0,0,0), (0,0,0))
+second=Block((100, 100), 90, 40, (0,101,20), (0,101,20))
+third=Block((23, 150), 45, 40, (101,101,101),(101,101,101))
 
 while True:  #главный цикл программы
     for e in pygame.event.get(): #цикл обработки очереди событий окна
