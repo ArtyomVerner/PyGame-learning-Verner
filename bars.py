@@ -1,6 +1,9 @@
 import pygame, os, sys
-class Block():
+class Block():#Класс Блок
     def __init__(self, cords, width, height, color,copyColor):
+        """
+        Метод конструктор
+        """
         self.x=cords[0]
         self.y=cords[1]
         self.h=height
@@ -10,19 +13,40 @@ class Block():
         self.second_color = (255,0,0)
         self.draw()
         self.originalColor=copyColor
-    def changeColor(self, cords, ):
+        self.drag=False
 
-        if self.collidePoint(cords) == True:
-            # color=self.color
-            # newColor=(100,0,0)
-            # self.color=newColor
-            self.color, self.second_color=self.second_color, self.color
+
+    # def drag_and_drop(self, e):
+    #     """
+    #     Принимает:
+    #     Событие нажатия мыши
+    #     Событие передвижения мыши
+    #
+    #     При захвате объекта мышкой, метод перемещает объект в соответствие с перемещением мыши
+    #     """
+    #     if self.collidePoint(e.pos):
+    #         self.drag = True
+    #
+    #         #print("First", self.drag)
+    #         if pygame.MOUSEBUTTONUP:
+    #             self.drag = False
+    #             #print("Second", self.drag)
+
+
+
+
+
+    def changeColor(self, cords):
+        """
+        Метод изменяет цвет объекта
+        """
+        if self.collidePoint(cords):
+            self.color, self.second_color = self.second_color, self.color
             self.draw()
 
-    def moveON(self,moveTo):#Передвижение блока
-        self.x += moveTo[0]
-        self.y += moveTo[1]
-        return self.x, self.y
+    def moveON(self,dCoords):#Передвижение блока
+        self.x += dCoords[0]
+        self.y += dCoords[1]
 
     def collidePoint (self, cords): #Сопаставляет координаты мыши с координатами объекта
         if (cords[0] > self.x and cords[0] < self.x + self.w) and (cords[1] > self.y and cords[1] < self.y + self.h):
@@ -39,10 +63,20 @@ class Block():
     def events(self, e):#Обрабатывает события  влияющие на объект.
         if e.type == pygame.MOUSEBUTTONDOWN:
             self.changeColor(e.pos)
-        if e.type == pygame.MOUSEMOTION:
-            self.moveON(e.rel)
+            # self.drag_and_drop(e)
+            if self.collidePoint(e.pos):
+                print("Drag")
+                self.drag = True
 
-        pass
+
+        if e.type == pygame.MOUSEMOTION:
+            # self.moveON(e.rel)
+            if self.drag:
+                self.moveON(e.rel)
+
+        if e.type == pygame.MOUSEBUTTONUP:
+            self.drag = False
+
 
     def update(self):
         pass
@@ -72,19 +106,29 @@ while True:  #главный цикл программы
                 sys.exit()
         if e.type == pygame.QUIT:
             sys.exit()
-        if e.type == pygame.MOUSEBUTTONDOWN:
-            print(e)
-            print(first.events(e))
-            print(second.events(e))
-            print(third.events(e))
 
-         #if e.type == pygame.MOUSEMOTION:
-            #first.events(e)
-            #second.events(e)
-            #third.events(e)
+        if e.type == pygame.MOUSEBUTTONDOWN:
+            # print(e)
+            first.events(e)
+            second.events(e)
+            third.events(e)
+
+        if e.type == pygame.MOUSEBUTTONUP:
+            first.events(e)
+            second.events(e)
+            third.events(e)
+
+        if e.type == pygame.MOUSEMOTION:
+
+            first.events(e)
+            second.events(e)
+            third.events(e)
             # print(e)
             # print(first.moveON(e.rel,))
             pass
+        """
+        Отображение объектов
+        """
 
     display.fill((0,0,100))
     first.render(display)
