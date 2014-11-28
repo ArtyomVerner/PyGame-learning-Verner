@@ -8,12 +8,13 @@ class Block():#Класс Блок
         self.y=cords[1]
         self.h=height
         self.w=width
-        self.image=pygame.Surface((width, height), pygame.SRCALPHA)
+        self.image=pygame.Surface((self.w, self.h), pygame.SRCALPHA)
         self.color=color
         self.second_color = (255,0,0)
         self.draw()
         self.originalColor=copyColor
         self.drag=False
+        self.deformation=False
 
     # def drag_and_drop(self, e):
     #     """
@@ -35,7 +36,9 @@ class Block():#Класс Блок
     def collidePoint2 (self, cords):
         if (cords[0] > (self.w-10)+self.x and cords[0] < self.w+self.x) \
                 and (cords[1] > (self.h-10)+self.y and cords[1] < self.h+self.y):
-            return (True)
+            return True
+        else:
+            return False
 
 
     def changeColor(self, cords):
@@ -66,27 +69,50 @@ class Block():#Класс Блок
     def events(self, e):#Обрабатывает события  влияющие на объект.
         if e.type == pygame.MOUSEBUTTONDOWN:
             self.changeColor(e.pos)
-            print(self.collidePoint2(e.pos))
+            if self.collidePoint2(e.pos):
+                self.deformation=True
+
+
             # self.drag_and_drop(e)
-            if self.collidePoint(e.pos):
+            elif self.collidePoint(e.pos):
                 self.drag = True
 
 
 
         if e.type == pygame.MOUSEMOTION:
             # self.moveON(e.rel)
+            # print(self.d)
             if self.drag:
                 self.moveON(e.rel)
+            elif self.deformation:
+                self.resize(e.rel)
 
         if e.type == pygame.MOUSEBUTTONUP:
             self.drag = False
-
+            self.deformation=False
 
     def update(self):
         pass
 
     def render(self, screen):#Отображает объект на экране.
         screen.blit(self.image,(self.x,self.y))
+
+
+    def resize(self, rel):
+
+        """
+        Изменяет размер блока
+        """
+        self.w+=rel[0]
+        self.h+=rel[1]
+        self.image=pygame.Surface((self.w, self.h), pygame.SRCALPHA)
+        self.draw()
+        if self.w <= 10:
+            self.w=10
+        if self.h <= 10:
+            self.h=10
+
+
 
 #Main
 
