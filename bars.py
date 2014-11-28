@@ -15,7 +15,6 @@ class Block():#Класс Блок
         self.originalColor=copyColor
         self.drag=False
 
-
     # def drag_and_drop(self, e):
     #     """
     #     Принимает:
@@ -33,7 +32,10 @@ class Block():#Класс Блок
     #             #print("Second", self.drag)
 
 
-
+    def collidePoint2 (self, cords):
+        if (cords[0] > (self.w-10)+self.x and cords[0] < self.w+self.x) \
+                and (cords[1] > (self.h-10)+self.y and cords[1] < self.h+self.y):
+            return (True)
 
 
     def changeColor(self, cords):
@@ -58,15 +60,17 @@ class Block():#Класс Блок
         return self.x, self.y
 
     def draw(self):#Рисует фигуры на указанных поверхностях.
-        pygame.draw.rect(self.image,self.color, (0, 0, self.h, self.w))
+        pygame.draw.rect(self.image,self.color, (0, 0, self.w,  self.h))
+        pygame.draw.rect(self.image,(12,233,34), (self.w-10, self.h-10, 10, 10))
 
     def events(self, e):#Обрабатывает события  влияющие на объект.
         if e.type == pygame.MOUSEBUTTONDOWN:
             self.changeColor(e.pos)
+            print(self.collidePoint2(e.pos))
             # self.drag_and_drop(e)
             if self.collidePoint(e.pos):
-                print("Drag")
                 self.drag = True
+
 
 
         if e.type == pygame.MOUSEMOTION:
@@ -112,6 +116,7 @@ while True:  #главный цикл программы
             first.events(e)
             second.events(e)
             third.events(e)
+
 
         if e.type == pygame.MOUSEBUTTONUP:
             first.events(e)
