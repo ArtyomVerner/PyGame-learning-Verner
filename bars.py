@@ -1,14 +1,19 @@
 import pygame, os, sys
 class Block():#Класс Блок
-    def __init__(self, cords, width, height, color,):
+    def __init__(self, coords, width, height, color,):
         """
         Метод конструктор
         """
-        self.x=cords[0]
-        self.y=cords[1]
-        self.h=height
-        self.w=width
-        self.image=pygame.Surface((self.w, self.h), pygame.SRCALPHA)
+        # self.x=cords[0]
+        # self.y=cords[1]
+        # self.h=height
+        # self.w=width
+        self.image=pygame.Surface((width, height), pygame.SRCALPHA)
+        self.rect = self.image.get_rect()
+        self.rect.left=coords[0]
+        self.rect.top=coords[1]
+        self.rect.h=height
+        self.rect.w=width
         self.color=color
         self.second_color = (255,0,0)
         self.draw()
@@ -34,8 +39,8 @@ class Block():#Класс Блок
 
 
     def collidePoint2 (self, cords):
-        if (cords[0] > (self.w-10)+self.x and cords[0] < self.w+self.x) \
-                and (cords[1] > (self.h-10)+self.y and cords[1] < self.h+self.y):
+        if (cords[0] > (self.rect.w-10)+self.rect.left and cords[0] < self.rect.w+self.rect.left) \
+                and (cords[1] > (self.rect.h-10)+self.rect.top and cords[1] < self.rect.h+self.rect.top):
             return True
         else:
             return False
@@ -45,26 +50,17 @@ class Block():#Класс Блок
         """
         Метод изменяет цвет объекта
         """
-        if self.collidePoint(cords):
+        if self.rect.collidepoint(cords):
             self.color, self.second_color = self.second_color, self.color
             self.draw()
 
-    def moveON(self,dCoords):#Передвижение блока
-        self.x += dCoords[0]
-        self.y += dCoords[1]
 
-    def collidePoint (self, cords): #Сопаставляет координаты мыши с координатами объекта
-        if (cords[0] > self.x and cords[0] < self.x + self.w) and (cords[1] > self.y and cords[1] < self.y + self.h):
-            return True
-        else:
-            return False
-
-    def get_cords(self):#Возвращает координаты текущего объекта.
-        return self.x, self.y
+    # def get_cords(self):#Возвращает координаты текущего объекта.
+    #     return self.x, self.y
 
     def draw(self):#Рисует фигуры на указанных поверхностях.
-        pygame.draw.rect(self.image,self.color, (0, 0, self.w,  self.h))
-        pygame.draw.rect(self.image,(12,233,34), (self.w-10, self.h-10, 10, 10))
+        pygame.draw.rect(self.image,self.color, (0, 0, self.rect.w,  self.rect.h))
+        pygame.draw.rect(self.image,(12,233,34), (self.rect.w-10, self.rect.h-10, 10, 10))
 
     def events(self, e):#Обрабатывает события  влияющие на объект.
         if e.type == pygame.MOUSEBUTTONDOWN:
@@ -74,7 +70,7 @@ class Block():#Класс Блок
 
 
             # self.drag_and_drop(e)
-            elif self.collidePoint(e.pos):
+            elif self.rect.collidepoint(e.pos):
                 self.drag = True
                 return self
 
@@ -84,10 +80,16 @@ class Block():#Класс Блок
             # self.moveON(e.rel)
             # print(self.d)
             if self.drag:
-                self.moveON(e.rel)
+                self.rect = self.rect.move(e.rel)
             elif self.deformation:
-                self.resize(e.rel)
-
+                self.rect.w+=e.rel[0]
+                self.rect.h+=e.rel[1]
+                if self.rect.w < 10:
+                    self.rect.w=10
+                if self.rect.h < 10:
+                    self.rect.h=10
+                self.image=self.image=pygame.Surface((self.rect.w, self.rect.h), pygame.SRCALPHA)
+                self.draw()
         if e.type == pygame.MOUSEBUTTONUP:
             self.drag = False
             self.deformation=False
@@ -96,24 +98,7 @@ class Block():#Класс Блок
         pass
 
     def render(self, screen):#Отображает объект на экране.
-        screen.blit(self.image,(self.x,self.y))
-
-
-    def resize(self, rel):
-
-        """
-        Изменяет размер блока
-        """
-        self.w+=rel[0]
-        self.h+=rel[1]
-        self.image=pygame.Surface((self.w, self.h), pygame.SRCALPHA)
-        self.draw()
-        if self.w <= 10:
-            self.w=10
-        elif self.h <= 10:
-            self.h=10
-
-
+        screen.blit(self.image,(self.rect.left,self.rect.top))
 
 #Main
 
@@ -126,7 +111,7 @@ display = pygame.display.set_mode((400, 400)) #создание окна
 """
 Содание объектов
 """
-first=Block((100, 10), 80, 100, (0,0,0), )
+first=Block((100, 10), 80, 100, (0,0,0))
 second=Block((100, 100), 90, 40, (0,101,20))
 third=Block((23, 150), 45, 40, (101,101,101))
 fourth=Block((40, 66,), 8, 12, (12, 103, 234))
