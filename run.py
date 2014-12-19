@@ -1,4 +1,4 @@
-import pygame, os, sys
+import pygame, sys
 from Classes.Block import Block
 
 #Main
@@ -35,7 +35,7 @@ while True:  #главный цикл программы
             for el in objects:
                 if el.events(e):
                     print("click on", el)
-                    helper=el
+
                     objects.remove(el)
                     objects.append(el)
                     break
